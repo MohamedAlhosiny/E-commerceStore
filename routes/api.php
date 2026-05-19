@@ -21,12 +21,12 @@ Route::get('/user', function (Request $request) {
 
 //For Users
 Route::prefix('/user')->group(function () {
-    Route::post('/register', [UserController::class, 'store']);
-    Route::post('/login', [UserController::class, 'login']);
+    Route::post('/register', [UserController::class, 'store']);  // **
+    Route::post('/login', [UserController::class, 'login']); // **
 
     Route::middleware('auth:sanctum', 'role.user')->group(function () {
 
-        Route::get('/logout', [UserController::class, 'logout']);
+        Route::get('/logout', [UserController::class, 'logout']);  // **
         Route::get('/products' , [ProductController2::class , "listActiveProducts"]); // to show active products only to make order
         Route::post('/searchProduct' , [ProductController2::class , 'searchProductByName']); // to search product by name
     });
@@ -94,8 +94,9 @@ Route::prefix('/order')->group(function () {
 //privileges for superadmin only
 Route::middleware('auth:sanctum' , 'role.superadmin')->group(function() {
     Route::delete('/admin/{id}' , [AdminController::class , 'destroy']);
-    Route::delete('/user/{id}' , [UserController::class , 'destroy']);
-    Route::get('/all-users' , [UserController::class , 'index']);
+    Route::delete('/user/{id}' , [UserController::class , 'destroy']); // **
+    Route::get('/all-users' , [UserController::class , 'index']);        // **
+    Route::get('/user/{id}' , [UserController::class , 'show'] );   // **
     Route::get('/all-admins' , [AdminController::class , 'index']);
     Route::get('/dashboard-stats' , [AdminController::class , 'dashboardStats']);
 

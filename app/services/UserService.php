@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 
-class AuthService {
+class UserService {
 
 
     public function __construct(private UserRepositoryInterface $userRepository)
@@ -44,10 +44,7 @@ class AuthService {
         ];
 
 
-
-
     }
-
 
 
 
@@ -61,6 +58,27 @@ class AuthService {
         ];
     }
 
+   public function index() {
+        return $this -> userRepository -> index();
+    }
+
+    public function show($id) {
+        $getUser = $this -> userRepository -> show($id);
+        if (!$getUser) {
+           return null;
+        }
+        return $getUser;
+    }
+
+
+    public function destroy($id) {
+        $user = $this -> userRepository -> show($id);
+        if (!$user) {
+            return false;
+        }
+
+        return $this -> userRepository -> destroy($id);
+    }
+
 
 }
-

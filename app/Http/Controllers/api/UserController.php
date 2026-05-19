@@ -11,15 +11,15 @@ use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\loginRequestUser;
 use App\Traits\ApiResponseTrait;
 use App\Interfaces\UserRepositoryInterface;
-use App\Services\AuthService;
+use App\Services\UserService;
 
 class UserController extends Controller
 {
     use ApiResponseTrait;
 
-    public function __construct(private AuthService $authService)
+    public function __construct(private UserService $userService)
     {
-        $this->authService = $authService;
+        $this->userService = $userService;
     }
 
 
@@ -29,7 +29,7 @@ class UserController extends Controller
 
         $data_validated = $request->validated();
 
-        $userRegister = $this->authService->register($data_validated);
+        $userRegister = $this->userService->register($data_validated);
 
 
 
@@ -49,7 +49,7 @@ class UserController extends Controller
 
     public function login (loginRequestUser $request) {
         $data = $request->validated();
-        $authData = $this->authService->login($data);
+        $authData = $this->userService->login($data);
 
         // dd($authData);
 
@@ -62,31 +62,41 @@ class UserController extends Controller
 
 
     public function logout() {
-        $authLogout = $this->authService->logout();
+        $authLogout = $this->userService->logout();
         return $this->successResponse(null, $authLogout['message'], 200);
     }
 
-    public function index()
-    {
-        $users = User::all(['id', 'name', 'email', 'created_at']);
 
 
-        return $this->successResponse($users, 'All users are here', 200);
+    //============ SuperAdmin only ============
+
+
+
+
+
+    public function index(){
+        $users = $this -> userService -> index();
+
+        return $this->successResponse($users, 'All clients are here', 200);
+    }
+
+    public function show($id) {
+            $getUser = $this -> userService ->show($id);
+            if (!$getUser) {
+                return $this -> errorResponse(null , 'User not found' , 404);
+            }
+
+            return $this -> successResponse($getUser , 'User found' , 200);
     }
 
 
-    public function destroy($id)
-    {
-        $user = User::find($id);
-
-        if (!$user) {
-
-            return $this->errorResponse(null, 'User not found', 404);
+    public function destroy($id) {
+        $destroyUser = $this -> userService -> destroy($id);
+        if (!$destroyUser) {
+            return $this -> errorResponse(null , 'User not found' , 404);
         }
+        return $this -> successResponse(null , 'User deleted successfully' , 204);
 
-        $user->delete();
-
-
-        return $this->successResponse(null, 'User deleted successfully', 204);
     }
+
 }
