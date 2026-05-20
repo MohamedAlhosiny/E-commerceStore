@@ -8,10 +8,10 @@ use Illuminate\Support\Facades\Hash;
 class UserService {
 
 
-    public function __construct(private UserRepositoryInterface $userRepository)
-    {
-        $this -> userRepository = $userRepository;
-    }
+    public function __construct(private UserRepositoryInterface $userRepository) // property poromotion in constructor
+    {}
+
+    
 
     public function register(array $data) {
         $data['password'] = Hash::make($data['password']);
