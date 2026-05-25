@@ -1,19 +1,16 @@
 <?php
-
 namespace App\Interfaces;
 
-
-
-interface UserRepositoryInterface {
-
+interface AdminRepositoryInterface
+{
     public function store(array $data);
 
-    public function findByEmail(string $email); // to login
+    public function findByEmail(string $email);
 
     public function getAll();
+
     public function findById($id);
 
     public function delete($id);
-
-
 }
+

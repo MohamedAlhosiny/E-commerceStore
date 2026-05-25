@@ -2,34 +2,32 @@
 namespace App\Repositories;
 
 use App\Interfaces\UserRepositoryInterface;
-
 use App\Models\User;
 
-class userRepository implements UserRepositoryInterface {
-
-public function store(array $data) {
-
-
+class UserRepository implements UserRepositoryInterface
+{
+    public function store(array $data)
+    {
         return User::create($data);
     }
 
-    public function findByEmail(array $data) {
-        return User::where('email' , $data['email'])->first();
-
+    public function findByEmail(string $email)
+    {
+        return User::where('email', $email)->first();
     }
 
-    public function index() {
+    public function getAll()
+    {
         return User::all(['id', 'name', 'email', 'created_at']);
     }
 
-    public function show($id) {
-        $getUser = User::find($id);
-        return $getUser;
-    }
-
-    public function destroy($id)
+    public function findById($id)
     {
-            return $this->show($id)->delete();
+        return User::find($id);
     }
 
+    public function delete($id)
+    {
+        return $this->findById($id)->delete();
+    }
 }

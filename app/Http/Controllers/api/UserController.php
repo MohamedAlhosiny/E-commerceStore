@@ -2,25 +2,17 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\User;
-use Illuminate\Http\Request;
-use App\Http\Requests\userRequest;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\loginRequestUser;
-use App\Traits\ApiResponseTrait;
-use App\Interfaces\UserRepositoryInterface;
+use App\Http\Requests\userRequest;
 use App\Services\UserService;
+use App\Traits\ApiResponseTrait;
 
 class UserController extends Controller
 {
     use ApiResponseTrait;
 
-    public function __construct(private UserService $userService)
-    {
-        $this->userService = $userService;
-    }
+    public function __construct(private UserService $userService) {} // DI for service
 
 
     // register user
@@ -49,11 +41,11 @@ class UserController extends Controller
 
     public function login (loginRequestUser $request) {
         $data = $request->validated();
-        $authData = $this->userService->login($data);
+        $authData = $this->userService->login($data['email']);
 
         // dd($authData);
 
-        if ($authData['message'] === 'Login successful') {
+        if ($authData['success'] ) {
             return $this->successResponse($authData['data'], $authData['message'], 200);
         } else {
             return $this->errorResponse(null, $authData['message'], 401);
@@ -95,7 +87,7 @@ class UserController extends Controller
         if (!$destroyUser) {
             return $this -> errorResponse(null , 'User not found' , 404);
         }
-        return $this -> successResponse(null , 'User deleted successfully' , 204);
+        return $this -> successResponse(null , 'User deleted successfully' , 200);
 
     }
 

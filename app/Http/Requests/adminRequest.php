@@ -24,7 +24,8 @@ class adminRequest extends FormRequest
         return [
             'name' => 'string|required|min:5',
             'email' => 'required|email:filter|unique:admins',
-            'password' => 'required|string|confirmed|min:10'
+            'password' => 'required|string|confirmed|min:8',
+            'role' => 'string|in:admin,superadmin',
         ];
     }
 }

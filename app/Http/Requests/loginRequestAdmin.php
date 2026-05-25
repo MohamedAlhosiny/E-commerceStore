@@ -23,7 +23,8 @@ class loginRequestAdmin extends FormRequest
     {
         return [
             'email' => 'required|email:filter',
-            'password' => 'string|required|min:10'
+            'password' => 'string|required'
+            
         ];
     }
 }

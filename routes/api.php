@@ -17,7 +17,7 @@ use Phiki\Phast\Root;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
-})->middleware('auth:sanctum');
+})->middleware('auth:sanctum');  // http://127.0.0.1:8000/api/user    => to show user data after login with token
 
 //For Users
 Route::prefix('/user')->group(function () {
@@ -35,11 +35,11 @@ Route::prefix('/user')->group(function () {
 //For Admins
 
 Route::prefix('admin')->group(function () {
-    Route::post('/register', [AdminController::class, 'register']);
-    Route::post('/login', [AdminController::class, 'login']);
+    Route::post('/register', [AdminController::class, 'register']); //**
+    Route::post('/login', [AdminController::class, 'login']);//**
 
     Route::middleware(['auth:sanctum', 'role.admin'])->group(function () {
-        Route::get('/logout', [AdminController::class, 'logout']);
+        Route::get('/logout', [AdminController::class, 'logout']); //**
     });
 });
 
@@ -93,12 +93,12 @@ Route::prefix('/order')->group(function () {
 
 //privileges for superadmin only
 Route::middleware('auth:sanctum' , 'role.superadmin')->group(function() {
-    Route::delete('/admin/{id}' , [AdminController::class , 'destroy']);
+    Route::delete('/admin/{id}' , [AdminController::class , 'destroy']); //**
     Route::delete('/user/{id}' , [UserController::class , 'destroy']); // **
     Route::get('/all-users' , [UserController::class , 'index']);        // **
     Route::get('/user/{id}' , [UserController::class , 'show'] );   // **
-    Route::get('/all-admins' , [AdminController::class , 'index']);
-    Route::get('/dashboard-stats' , [AdminController::class , 'dashboardStats']);
+    Route::get('/all-admins' , [AdminController::class , 'index']); //**
+    Route::get('/dashboard-stats' , [AdminController::class , 'dashboardStats']); //** 
 
 });
 

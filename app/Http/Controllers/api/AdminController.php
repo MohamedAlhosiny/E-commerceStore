@@ -2,121 +2,72 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\Admin;
-use Illuminate\Http\Request;
-use App\Http\Requests\adminRequest;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
+use App\Http\Requests\adminRequest;
 use App\Http\Requests\loginRequestAdmin;
-use App\Models\Order;
-use App\Models\Product;
-use App\Models\User;
+use App\Interfaces\AdminServiceInterface;
 use App\Traits\ApiResponseTrait;
+use Illuminate\Http\Request;
 
 class AdminController extends Controller
 {
     use ApiResponseTrait;
 
+    public function __construct(private AdminServiceInterface $adminService)
+    {
+    }
 
-    public function register(adminRequest $request) {
-        $data_admin = $request->validated();
+    public function register(adminRequest $request)
+    {
+        $admin = $this->adminService->register($request->validated());
 
-        $admin = Admin::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password)
-        ]);
-        if ($admin) {
+        return $this->successResponse([
+            $admin->name ,
+             $admin->email,
+              $admin->role]
+              ,'Admin created successfully', 201);
+    }
 
-            return $this->successResponse($admin->name , "Admin created successfully" , 201);
+    public function login(loginRequestAdmin $request)
+    {
+        $result = $this->adminService->login($request->email, $request->password);
+
+        if (!$result['success']) {
+            return $this->errorResponse(null, $result['message'], 401);
         }
 
+        return $this->successResponse($result['data'], $result['message'], 200);
     }
 
-    public function login(loginRequestAdmin $request){
+    public function index()
+    {
+        $admins = $this->adminService->index();
 
-        $loginRequestAdmin = $request->validated();
+        return $this->successResponse($admins, 'list of all admins', 200);
+    }
 
-        $admin = Admin::where('email' , $request->email)->first();
+    public function dashboardStats()
+    {
+        $stats = $this->adminService->dashboardStats();
 
-        if(!$admin || !Hash::check($request->password , $admin->password)) {
+        return $this->successResponse($stats, 'dashboard statistics', 200);
+    }
 
-            return $this->errorResponse(null , "The provided credentials are incorrect" , 401);
+    public function logout()
+    {
+        $result = $this->adminService->logout();
 
-        }else {
+        return $this->successResponse(null, $result['message'], 200);
+    }
 
-            $ability =[ 'role:'.$admin->role] ;
+    public function destroy($id)
+    {
+        $deleted = $this->adminService->destroy($id);
 
-            $token = $admin->createToken('tokenAdmin' , $ability)->plainTextToken;
-
-            $data_admin = [
-                'name' => $admin->name,
-                'email' => $admin->email,
-                'role' => $admin->role,
-                'token' => $token
-            ];
-
-            return $this->successResponse($data_admin , "Admin login successfully" , 200);
-
-
+        if (!$deleted) {
+            return $this->errorResponse(null, 'Admin not found', 404);
         }
 
-
+        return $this->successResponse(null, 'Admin deleted successfully', 200);
     }
-
-    public function index() {
-        $admins = Admin::all(['id' , 'name' , 'email' , 'role' , 'created_at']);
-
-        return $this->successResponse($admins , "list of all admins" , 200);
-    }
-
-
-
-    public function dashboardStats(){
-        $stats = [
-            'all-users' => User::count(), // count() is a method that counts the number of records in the database table associated with the User model and returns that count as an integer.
-            'all-admins' => Admin::count(),
-            'all-products' => Product::count(),
-            'all-orders' => Order::count(),
-            'total-revenue' => Order::where('status' , 'completed')->sum('totalPrice'),
-            'top-selling-product' => Product::withCount('orders')
-                                        ->orderByDesc('orders_count')
-                                        ->first(['id' , 'name' , 'orders_count'])
-
-        ];
-
-
-        return $this->successResponse($stats , "dashboard statistics" , 200);
-    }
-
-
-
-    public function logout(){
-        $admin = Auth::user();
-
-        $admin->currentAccessToken()->delete();
-
-        return $this->successResponse(null , "Admin logout successfully" , 200);
-    }
-
-
-
-
-    //for superadmin only
-    public function destroy($id) {
-        $admin = Admin::find($id);
-
-        if (!$admin) {
-
-            return $this->errorResponse(null , "Admin not found" , 404 );
-        }
-
-        $admin->delete();
-
-      return   $this->successResponse(null , "Admin deleted successfully" , 200);
-
-    }
-
-
 }

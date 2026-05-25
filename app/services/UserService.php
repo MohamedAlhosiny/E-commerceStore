@@ -11,7 +11,7 @@ class UserService {
     public function __construct(private UserRepositoryInterface $userRepository) // property poromotion in constructor
     {}
 
-    
+
 
     public function register(array $data) {
         $data['password'] = Hash::make($data['password']);
@@ -20,11 +20,11 @@ class UserService {
 
 
 
-    public function login(array $data) {
+    public function login(string $email) {
 
-        $user = $this -> userRepository -> findByEmail($data) ;
+        $user = $this -> userRepository -> findByEmail($email ) ;
 
-        if (!$user || !Hash::check($data['password'] , $user->password)) {
+        if (!$user || !Hash::check(request('password'), $user->password)) { // to check the password
             return [
                 'success' => false ,
                 'message' => 'Invalid credentials'
@@ -59,11 +59,11 @@ class UserService {
     }
 
    public function index() {
-        return $this -> userRepository -> index();
+        return $this -> userRepository -> getAll();
     }
 
     public function show($id) {
-        $getUser = $this -> userRepository -> show($id);
+        $getUser = $this -> userRepository -> findById($id);
         if (!$getUser) {
            return null;
         }
@@ -72,12 +72,12 @@ class UserService {
 
 
     public function destroy($id) {
-        $user = $this -> userRepository -> show($id);
+        $user = $this -> userRepository -> findById($id);
         if (!$user) {
             return false;
         }
 
-        return $this -> userRepository -> destroy($id);
+        return $this -> userRepository -> delete($id);
     }
 
 
