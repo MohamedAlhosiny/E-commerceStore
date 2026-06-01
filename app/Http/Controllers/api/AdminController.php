@@ -71,5 +71,6 @@ class AdminController extends Controller
         return $this->successResponse(null, 'Admin deleted successfully', 200);
     }
 }
-// the AUTH for Admin , User finish + SuperAdmin features
+// the AUTH for Admin , User finish + SuperAdmin features ==
+
 

@@ -70,16 +70,8 @@ class AdminService implements AdminServiceInterface
 
     public function dashboardStats()
     {
-        return [
-            'all-users' => User::count(),
-            'all-admins' => $this->adminRepository->getAll()->count(),
-            'all-products' => Product::count(),
-            'all-orders' => Order::count(),
-            'total-revenue' => Order::where('status', 'completed')->sum('totalPrice'),
-            'top-selling-product' => Product::withCount('orders')
-                ->orderByDesc('orders_count')
-                ->first(['id', 'name', 'orders_count']),
-        ];
+        return $this->adminRepository->dashboardStats();
+
     }
 
     public function destroy($id)

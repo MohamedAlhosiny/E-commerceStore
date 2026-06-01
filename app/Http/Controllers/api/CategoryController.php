@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\Category;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\CategoryRequest;
 use App\Models\Admin;
+use App\Models\Category;
+use App\Traits\ApiResponseTrait;
 use Illuminate\Container\Attributes\Auth;
 use Illuminate\Database\QueryException;
-use App\Traits\ApiResponseTrait;
+use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
@@ -22,12 +23,9 @@ class CategoryController extends Controller
 
 
 
-    public function store(Request $request)
+    public function store(CategoryRequest $request)
     {
-        $request->validate([
-            'name' => 'required|string|min:6',
 
-        ]);
         try {
 
             $newCategory = Category::create([
@@ -65,9 +63,7 @@ class CategoryController extends Controller
 
     public function update(Request $request, string $id)
     {
-        $request->validate([
-            'name' => 'string|min:6',
-        ]);
+
 
         $category = Category::find($id);
 

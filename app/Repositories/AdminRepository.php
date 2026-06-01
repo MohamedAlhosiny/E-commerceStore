@@ -4,6 +4,9 @@ namespace App\Repositories;
 
 use App\Interfaces\AdminRepositoryInterface;
 use App\Models\Admin;
+use App\Models\Order;
+use App\Models\Product;
+use App\Models\User;
 
 class AdminRepository implements AdminRepositoryInterface
 {
@@ -37,5 +40,26 @@ class AdminRepository implements AdminRepositoryInterface
 
         return $admin->delete();
     }
-}
 
+    public function dashboardStats()
+    {
+        $totalUsers = User::count();
+        $totalProducts = Product::count();
+        $totalOrders = Order::count();
+        $allAdmins = Admin::all(['id', 'name', 'email', 'role', 'created_at']);
+        $totalRevenue = Order::where('status', 'completed')->sum('totalPrice');
+        $topSellingProduct = Product::withCount('orders')
+            ->orderByDesc('orders_count')
+            ->first(['id', 'name', 'orders_count']);
+
+
+        return [
+            'total_users' => $totalUsers,
+            'total_products' => $totalProducts,
+            'total_orders' => $totalOrders,
+            'all_admins' => $allAdmins,
+            'total_revenue' => $totalRevenue,
+            'top_selling_product' => $topSellingProduct,
+        ];
+    }
+}

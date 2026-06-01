@@ -12,5 +12,8 @@ interface AdminRepositoryInterface
     public function findById($id);
 
     public function delete($id);
+    
+    public function dashboardStats();
+
 }
 

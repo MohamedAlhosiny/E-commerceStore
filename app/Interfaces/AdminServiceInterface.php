@@ -13,6 +13,6 @@ interface AdminServiceInterface
     public function index();
 
     public function dashboardStats();
-
+    
     public function destroy($id);
 }

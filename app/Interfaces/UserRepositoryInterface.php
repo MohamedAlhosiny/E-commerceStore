@@ -6,7 +6,7 @@ namespace App\Interfaces;
 
 interface UserRepositoryInterface {
 
-    public function store(array $data);
+    public function store(array $data) ;
 
     public function findByEmail(string $email); // to login
 
