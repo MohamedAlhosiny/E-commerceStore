@@ -52,7 +52,7 @@ Route::middleware('auth:sanctum', 'role.admin' )->group(function () {
         Route::get('/', [CategoryController::class, 'index']);
         Route::get('/{id}', [CategoryController::class, 'show']);
         Route::delete('/{id}', [CategoryController::class, 'destroy']);
-        Route::post('/{id}', [CategoryController::class, 'update']);
+        Route::put('/{id}', [CategoryController::class, 'update']);
     });
 
     //Products
@@ -98,7 +98,7 @@ Route::middleware('auth:sanctum' , 'role.superadmin')->group(function() {
     Route::get('/all-users' , [UserController::class , 'index']);        // **
     Route::get('/user/{id}' , [UserController::class , 'show'] );   // **
     Route::get('/all-admins' , [AdminController::class , 'index']); //**
-    Route::get('/dashboard-stats' , [AdminController::class , 'dashboardStats']); //** 
+    Route::get('/dashboard-stats' , [AdminController::class , 'dashboardStats']); //**
 
 });
 

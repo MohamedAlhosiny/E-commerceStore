@@ -3,11 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\CategoryRequest;
-use App\Models\Admin;
+use App\Http\Requests\Admin\StoreCategoryRequest;
 use App\Models\Category;
 use App\Traits\ApiResponseTrait;
-use Illuminate\Container\Attributes\Auth;
+// use Illuminate\Container\Attributes\Auth;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 
@@ -23,7 +22,7 @@ class CategoryController extends Controller
 
 
 
-    public function store(CategoryRequest $request)
+    public function store(StoreCategoryRequest $request)
     {
 
         try {
