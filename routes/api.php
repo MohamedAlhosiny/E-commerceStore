@@ -48,11 +48,11 @@ Route::prefix('admin')->group(function () {
 Route::middleware('auth:sanctum', 'role.admin' )->group(function () {
     //Categories
     Route::prefix('/categories')->group(function () {
-        Route::post('/', [CategoryController::class, 'store']);
-        Route::get('/', [CategoryController::class, 'index']);
-        Route::get('/{id}', [CategoryController::class, 'show']);
-        Route::delete('/{id}', [CategoryController::class, 'destroy']);
-        Route::put('/{id}', [CategoryController::class, 'update']);
+        Route::post('/', [CategoryController::class, 'store']); //**
+        Route::get('/', [CategoryController::class, 'index']); //**
+        Route::get('/{id}', [CategoryController::class, 'show']); //**
+        Route::delete('/{id}', [CategoryController::class, 'destroy']); //**
+        Route::put('/{id}', [CategoryController::class, 'update']); //**
     });
 
     //Products

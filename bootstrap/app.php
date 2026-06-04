@@ -19,6 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'role.admin' => AdminMiddleware::class,
             'role.user' => UserMiddleware::class,
             'role.superadmin' => SuperadminMiddleware::class,
+            
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

@@ -21,15 +21,13 @@ class UpdateCategoryRequest extends FormRequest
         $categoryId = $this->route('id'); // Get the category ID from the route parameter
 
         return [
-                'name' => ['required', 'string', 'max:255', 'unique:categories,name,' . $categoryId],
+                'name' => ['sometimes', 'string', 'max:255', 'unique:categories,name,' . $categoryId],
         ];
     }
 
     public function messages(): array
     {
         return [
-            'name.required' => 'Category name is required.',
-            'name.unique'   => 'This category name already exists.',
             'name.max'      => 'Category name must not exceed 255 characters.',
         ];
     }
@@ -37,8 +35,9 @@ class UpdateCategoryRequest extends FormRequest
 
     protected function failedValidation(Validator $validator): void
     {
+        // dd($validator->errors());
         throw new HttpResponseException(
-            $this->errorResponse('Validation failed', 422, $validator->errors())
+            $this->errorResponse($validator->errors(), 'Validation failed', 422)
         );
     }
 

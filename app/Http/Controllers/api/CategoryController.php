@@ -1,103 +1,75 @@
 <?php
 
+
+
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\StoreCategoryRequest;
-use App\Models\Category;
+use App\Http\Requests\StoreCategoryRequest;
+use App\Http\Requests\UpdateCategoryRequest;
+use App\Services\CategoryService;
 use App\Traits\ApiResponseTrait;
-// use Illuminate\Container\Attributes\Auth;
-use Illuminate\Database\QueryException;
-use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 
 class CategoryController extends Controller
 {
     use ApiResponseTrait;
 
-    public function index()
+    public function __construct(protected CategoryService $categoryService) {}
+
+    public function index(): JsonResponse
     {
-        $categories = Category::paginate(10);
-        return $this->successResponse($categories, "all categories retrieved successfully", 200);
+        $categories = $this->categoryService->getAll();
+
+        return $this->successResponse($categories, 'All categories retrieved successfully.', 200);
     }
 
-
-
-    public function store(StoreCategoryRequest $request)
+    public function store(StoreCategoryRequest $request): JsonResponse
     {
+        $category = $this->categoryService->create($request->validated());
+
+        return $this->createdResponse($category->name, 'Category created successfully.');
+    }
+
+    public function show(int $id)
+    {
+        $category  = $this->categoryService->findById($id);
+        return $this->successResponse($category, 'Category retrieved successfully.');
+    }
+
+    public function update(UpdateCategoryRequest $request, int $id)
+    {
+        // dd($id);
+        // dd($category);
+        // dd($request->validated()); // to check PUT method you should test data in raw form in postman and not in form-data
 
         try {
+            $updated = $this->categoryService->update($id, $request->validated());
 
-            $newCategory = Category::create([
-                'name' => $request->name,
-            ]);
+            return $this->successResponse($updated, 'Category updated successfully.');
+        } catch (\Exception $e) {
 
-            if ($newCategory) {
-
-                return $this->successResponse($newCategory, 'Category added successfully', 201);
-            }
-        } catch (QueryException $e) {
-
-
-            return $this->errorResponse(null, 'Failed to add category ' . $request->name . ' is already exist', 500);
-        }
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        $category = Category::find($id);
-        if (!$category) {
-
-            return $this->errorResponse(null , 'sorry this category not exist to show', 404);
-        } else {
-
-            return $this->successResponse($category , 'this category is ' . $category->name . '' , 200);
+            return $this->errorResponse($e->getMessage(), 'Failed to update category.', $e->getCode());
         }
     }
 
 
+    public function destroy(int $id): JsonResponse
 
-
-    public function update(Request $request, string $id)
     {
+        try {
 
+            $this->categoryService->delete($id);
 
-        $category = Category::find($id);
+            return $this->successResponse(
+                null,
+                'Category deleted successfully.'
+            );
+        } catch (\Exception $e) {
 
-        if (!$category) {
-
-            return $this->errorResponse(null , "sorry this category not exist to update" , 404);
-        } else {
-
-            $oldCategory = $category->name;
-
-            $category->name = $request->name ?? $category->name;
-            $category->save();
-
-            $newCategory = Category::find($id);
-
-
-            return $this->successResponse($newCategory , 'Category updated from ' .$oldCategory . ' to ' . $category->name , 200);
-        }
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        $category = Category::find($id);
-
-        if (!$category) {
-
-            return $this->errorResponse( null , 'sorry this category not exist to delete' , 404);
-        } else {
-            $category->delete();
-
-
-            return $this->successResponse( null , 'category is deleted successfully' , 204);
+            return $this->notFoundResponse(
+                $e->getMessage()
+            );
         }
     }
 }

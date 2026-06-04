@@ -3,7 +3,7 @@
 
 
 
-namespace App\Http\Requests\Admin;
+namespace App\Http\Requests;
 
 use App\Traits\ApiResponseTrait;
 use Illuminate\Foundation\Http\FormRequest;
@@ -37,8 +37,10 @@ class StoreCategoryRequest extends FormRequest
 
     protected function failedValidation(Validator $validator): void
     {
+                    // dd($validator->errors());
+
         throw new HttpResponseException(
-            $this->errorResponse('Validation failed', 422, $validator->errors())
+            $this->errorResponse($validator->errors(), 'Validation failed', 422)
         );
     }
 }
