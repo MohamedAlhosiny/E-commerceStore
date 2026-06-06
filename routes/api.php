@@ -27,7 +27,7 @@ Route::prefix('/user')->group(function () {
     Route::middleware('auth:sanctum', 'role.user')->group(function () {
 
         Route::get('/logout', [UserController::class, 'logout']);  // **
-        Route::get('/products' , [ProductController2::class , "listActiveProducts"]); // to show active products only to make order
+        Route::get('/products' , [ProductController2::class , "listActiveProducts"]); // to show active products only to make order //**
         Route::post('/searchProduct' , [ProductController2::class , 'searchProductByName']); // to search product by name
     });
 });
@@ -57,12 +57,12 @@ Route::middleware('auth:sanctum', 'role.admin' )->group(function () {
 
     //Products
     Route::prefix('/products')->group(function () {
-        Route::get('/', [ProductController2::class, 'index']);
-        Route::get('/{id}', [ProductController2::class, 'show']);
-        Route::post('/', [ProductController2::class, 'store']);
-        Route::post('/{id}/status', [ProductController2::class, 'changeStatus']);
-        Route::post('/{id}', [ProductController2::class, 'update']);
-        Route::delete('/{id}', [ProductController2::class, 'destroy']);
+        Route::get('/', [ProductController2::class, 'index']); //**
+        Route::get('/{id}', [ProductController2::class, 'show']); //**
+        Route::post('/', [ProductController2::class, 'store']);//**
+        Route::patch('/{id}/status', [ProductController2::class, 'changeStatus']);//**
+        Route::put('/{id}', [ProductController2::class, 'update']);//**
+        Route::delete('/{id}', [ProductController2::class, 'destroy']);//**
     });
 });
 

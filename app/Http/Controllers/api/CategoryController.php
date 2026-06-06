@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
 use App\Services\CategoryService;
+use App\Services\ExceptionHandler\CategoryExceptionHandlerInterface;
 use App\Traits\ApiResponseTrait;
 use Illuminate\Http\JsonResponse;
 
@@ -15,7 +16,10 @@ class CategoryController extends Controller
 {
     use ApiResponseTrait;
 
-    public function __construct(protected CategoryService $categoryService) {}
+    public function __construct(
+        protected CategoryService $categoryService,
+        protected CategoryExceptionHandlerInterface $exceptionHandler
+    ) {}
 
     public function index(): JsonResponse
     {
@@ -55,21 +59,17 @@ class CategoryController extends Controller
 
 
     public function destroy(int $id): JsonResponse
-
     {
         try {
-
             $this->categoryService->delete($id);
 
             return $this->successResponse(
-                null,
-                'Category deleted successfully.'
+                ['deleted_id' => $id],
+                'Category deleted successfully.',
+                200
             );
         } catch (\Exception $e) {
-
-            return $this->notFoundResponse(
-                $e->getMessage()
-            );
+            return $this->exceptionHandler->handle($e);
         }
     }
 }
