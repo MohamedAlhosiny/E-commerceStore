@@ -7,13 +7,8 @@ use App\Http\Controllers\Api\OrderController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 // use App\Http\Controllers\ProductController;
-use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\ProductController2;
 use App\Http\Controllers\Api\UserController;
-use App\Models\Admin;
-use App\Models\Product;
-use Doctrine\DBAL\Schema\Index;
-use Phiki\Phast\Root;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -24,7 +19,7 @@ Route::prefix('/user')->group(function () {
     Route::post('/register', [UserController::class, 'store']);  // **
     Route::post('/login', [UserController::class, 'login']); // **
 
-    Route::middleware('auth:sanctum', 'role.user')->group(function () {
+    Route::middleware('auth:sanctum','role.user')->group(function () {
 
         Route::get('/logout', [UserController::class, 'logout']);  // **
         Route::get('/products' , [ProductController2::class , "listActiveProducts"]); // to show active products only to make order //**
@@ -105,8 +100,3 @@ Route::middleware('auth:sanctum' , 'role.superadmin')->group(function() {
 
 // Route::get('/product' , [ProductController::class , "index"])->name('product.index');
 
-Route::post('/product', [ProductController::class, 'store']);
-Route::get('/product', [ProductController::class, 'index']);
-Route::get('/product/{id}', [ProductController::class, 'show']);
-Route::post('/product/{id}', [ProductController::class, 'update']);
-Route::delete('/product/{id}', [ProductController::class, 'destroy']);
