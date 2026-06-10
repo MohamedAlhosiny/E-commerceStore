@@ -10,9 +10,11 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\orderRequest;
+use App\Http\Resources\OrderResource;
 use App\Models\Order;
 use App\Models\Product;
 use App\Notifications\OrderstausUpdated;
+use App\Interfaces\OrderServiceInterface;
 use App\Traits\ApiResponseTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -22,34 +24,47 @@ use function PHPSTORM_META\map;
 class OrderController extends Controller
 {
     use ApiResponseTrait;
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+
+    public function __construct(private OrderServiceInterface $orderService)
     {
-        // $allOrders = Order::withAggregate('user' , 'name')->get();
-        $allOrders = Order::withAggregate('user', 'name')->paginate(10);
-        return $this->successResponse($allOrders, 'all orders retrieved successfully', 200);
+    }
+
+    public function index(Request $request)
+    {
+        $perPage = $request->integer('per_page', 10);
+        $orders = $this->orderService->getAll($perPage);
+
+        return $this->successResponse(
+            OrderResource::collection($orders),
+            'All orders retrieved successfully.',
+            200
+        );
     }
 
 
     //=======================================
 
 
-    public function myorders()
+    public function myorders(Request $request)
     {
+        $userId = Auth::id();
 
-        $myorders = Order::where('user_id', Auth::user()->id)->get();
-        $user_name = Auth::user()->name; // name for auth user
-
-        if ($myorders->isEmpty()) {
-
-            return $this->errorResponse(null, "orders not found for this user " . $user_name, 404);
-        } else {
-
-
-            return $this->successResponse($myorders, "orders for this user "  . $user_name . " retrived successfully", 200);
+        if (!$userId) {
+            return $this->errorResponse(null, 'Unauthenticated user.', 401);
         }
+
+        $perPage = $request->integer('per_page', 10);
+        $myorders = $this->orderService->getMyOrders($userId, $perPage);
+
+        if ($myorders->total() === 0) {
+            return $this->errorResponse(null, 'No orders found for this user.', 404);
+        }
+
+        return $this->successResponse(
+            OrderResource::collection($myorders),
+            'User orders retrieved successfully.',
+            200
+        );
     }
 
 
