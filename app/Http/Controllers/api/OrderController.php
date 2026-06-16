@@ -8,18 +8,16 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Exceptions\OrderProductUnavailableException;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\orderRequest;
+use App\Http\Requests\orderRequest as OrderRequest;
 use App\Http\Resources\OrderResource;
 use App\Models\Order;
-use App\Models\Product;
 use App\Notifications\OrderstausUpdated;
 use App\Interfaces\OrderServiceInterface;
 use App\Traits\ApiResponseTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-
-use function PHPSTORM_META\map;
 
 class OrderController extends Controller
 {
@@ -72,86 +70,38 @@ class OrderController extends Controller
 
     //============================================================
 
-    public function store(orderRequest $request)
+    public function store(OrderRequest $request)
     {
-        $validOrder = $request->validated();
-
-        $totalPrice = 0;
-        $points = 0;
-
+        if (!Auth::id()) {
+            return $this->errorResponse(null, 'Unauthenticated user.', 401);
+        }
 
 
-        //  Check if all products are valid and active before creating the order
-        foreach ($validOrder['products'] as $productData) {
-            $product = Product::find($productData['product_id']);
 
-            if (!$product || $product->status == 'unactive') {
-                $productName = $product ? $product->name : 'unknown product';
+        try {
+            $order = $this->orderService->createOrder(Auth::id(), $request->validated()['products']);
 
-                return $this->errorResponse(null, "product {$productName} not available to orderd", 400);
-            }
-            //  Create order only after validation
-            $order = Order::create([
-                'order_date' => now(),
-                'points' => 0,
-                'user_id' => Auth::user()->id,
-                'totalPrice' => 0
-            ]);
+            return $this->createdResponse(
+                new OrderResource($order),
+                'Order created successfully.',
+                201
+            );
+        } catch (OrderProductUnavailableException $e) {
+            return $this->errorResponse(
+                [
+                    'errors' => $e->errors(),
+                ],
+                $e->getMessage(),
+                422
+            );
+        } catch (\Exception $e) {
+            $status = $e->getCode();
 
-            foreach ($validOrder['products'] as $productData) {
-                $product = Product::find($productData['product_id']);
-                $quantity = $productData['quantity']; // from request
-                $price = $product->price; // from database
-                $product_name = $product->name; // from database
-
-                $order->products()->attach($productData['product_id'], [
-                    'product_name' => $product_name,
-                    'quantity' => $quantity,
-                    'price' => $price
-                ]);
-
-                $totalPrice += $price * $quantity;
+            if (!is_int($status) || $status < 400) {
+                $status = 500;
             }
 
-
-
-            //  Calculate points after all products are processed
-            if ($totalPrice >= 50) {
-                $points = $totalPrice / 50;
-            } else {
-                $points = 1;
-            }
-
-            //  Update order with total price and points
-            $order->update([
-                'totalPrice' => $totalPrice,
-                'points' => $points
-            ]);
-
-            $user = Auth::user();
-
-            // $user->notify(new CreateOrder($totalPrice , $user->name , $order->id));
-            // Notification::send($user , new CreateOrder($totalPrice , $user->name , $order->id));
-
-            //  Prepare data for response
-            $data = $order->products->map(function ($product) {
-                return [
-                    'product_name' => $product->name,
-                    'price' => $product->price,
-                    'quantity' => $product->pivot->quantity,
-                    'description' => $product->description
-                ];
-            });
-
-            //  Final response
-            return $this->successResponse($order->load('products'), 'order created successfully', 201);
-            // return $this->successResponse( $data , 'order created successfully' , 201); // if you want less data you are manage it ///
-
-
-
-
-
-
+            return $this->errorResponse(null, $e->getMessage(), $status);
         }
     }
 

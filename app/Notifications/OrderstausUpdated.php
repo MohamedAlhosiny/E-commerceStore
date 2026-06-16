@@ -38,9 +38,9 @@ class OrderstausUpdated extends Notification
 public function toMail(object $notifiable): MailMessage
 {
     return (new MailMessage)
-        ->subject('تم تعديل حالة الطلب رقم ' . $this->orderID)
-        ->greeting('مرحبا ' . $this->userName)
-        ->line('تم تعديل حالة طلبك رقم ' . $this->orderID . ' من حالة ' . $this->oldStatus . ' إلى حالة ' . $this->newStatus);
+        ->subject('Order Status Updated: ' . $this->orderID)
+        ->greeting('Hello ' . $this->userName)
+        ->line('Your order status has been updated for order ID: ' . $this->orderID . ' from ' . $this->oldStatus . ' to ' . $this->newStatus);
 }
 
 
@@ -56,7 +56,7 @@ public function toMail(object $notifiable): MailMessage
             'old_status' => $this->oldStatus,
             'new_status' => $this->newStatus,
             'user_name' => $this->userName,
-            'message' => 'order status updated successfully'
+            'message' => 'Order status updated successfully'
         ];
     }
 }

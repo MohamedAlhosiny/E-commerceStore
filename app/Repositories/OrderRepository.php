@@ -40,4 +40,9 @@ class OrderRepository implements OrderRepositoryInterface
             ->latest()
             ->paginate($perPage);
     }
+
+    public function create(array $data): Order
+    {
+        return $this->model->create($data);
+    }
 }

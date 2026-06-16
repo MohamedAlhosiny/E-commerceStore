@@ -40,11 +40,11 @@ class CreateOrder extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('تم انشاء طلبك بنجاح ')
-            ->greeting('مرحبا ' . $this->userName)
-            ->line('تم انشاء طلبك بنجاح برقم  ' . $this->orderId)
+            ->subject('your order has been created successfully')
+            ->greeting('Hello ' . $this->userName)
+            ->line('Your order has been created successfully with ID: ' . $this->orderId)
             // ->action('Notification Action', url('/'))
-            ->line('سنقوم بمراجعة طلبك قريبا واعلامك باي تحديثات');
+            ->line('We will review your order soon and notify you of any updates.');
     }
 
     /**
@@ -59,7 +59,7 @@ class CreateOrder extends Notification
             'order_id' => $this->orderId,
             'order_price' => $this->orderPrice,
             'user_name' => $this->userName,
-            'message' => 'تم انشاء طلبك بنجاح'
+            'message' => 'Your order has been created successfully'
 
         ];
     }
