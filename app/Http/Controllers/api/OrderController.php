@@ -202,22 +202,12 @@ class OrderController extends Controller
     }
 
 
-    public function edit(Order $order)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, Order $order)
     {
-        //
+       
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+
     public function destroy(string $id)
     {
         $orderToDelete = Order::find($id);
