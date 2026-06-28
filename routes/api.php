@@ -23,7 +23,7 @@ Route::prefix('/user')->group(function () {
 
         Route::get('/logout', [UserController::class, 'logout']);  // **
         Route::get('/products' , [ProductController2::class , "listActiveProducts"]); // to show active products only to make order //**
-        Route::post('/searchProduct' , [ProductController2::class , 'searchProductByName']); // to search product by name
+        Route::post('/searchProduct' , [ProductController2::class , 'searchProductByName']); // to search product by name //**
     });
 });
 
@@ -65,7 +65,7 @@ Route::prefix('/order')->group(function () {
     // User privileges on order
     Route::middleware('auth:sanctum', 'role.user')->group(function () {
         Route::post('/', [OrderController::class, 'store']); //User create order
-        Route::get('/myorders' , [OrderController::class , 'myorders']); // User show his orders  //** 
+        Route::get('/myorders' , [OrderController::class , 'myorders']); // User show his orders  //**
         Route::get('/notifications' , [NotificationController::class , 'index']); //User show his notification
 
     });
@@ -73,14 +73,15 @@ Route::prefix('/order')->group(function () {
     //Admin privileges on order
     Route::middleware('auth:sanctum' , 'role.admin')->group(function() {
         Route::get('/' , [OrderController::class , 'index']);  //**
-        Route::patch('/{id}/statusOrder' , [OrderController::class , 'controlStatus']);
-        Route::get('/{id}' , [OrderController::class , 'show']);
-        Route::delete('/{id}' , [OrderController::class , 'destroy']);
-        Route::get('/order-status' , function() {
+          Route::get('/order-status' , function() {
             return response()->json([
                 'statuses for order' => ['pending' , 'processing','completed' , 'cancelled']
-            ]);
+            ]); //**
         });
+        Route::patch('/{id}/statusOrder' , [OrderController::class , 'controlStatus']); 
+        Route::get('/{id}' , [OrderController::class , 'show']);
+        Route::delete('/{id}' , [OrderController::class , 'destroy']);
+
 
 
     });

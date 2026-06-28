@@ -30,6 +30,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(OrderRepositoryInterface::class, OrderRepository::class);
         $this->app->bind(ProductRepositoryInterface::class, ProductRepository::class);
         $this->app->bind(\App\Interfaces\OrderServiceInterface::class, \App\Services\OrderService::class);
+        $this->app->bind(\App\Interfaces\OrderStatusServiceInterface::class, \App\Services\OrderStatusService::class);
         $this->app->bind(\App\Services\ExceptionHandler\CategoryExceptionHandlerInterface::class, \App\Services\ExceptionHandler\CategoryExceptionHandler::class);
     }
 

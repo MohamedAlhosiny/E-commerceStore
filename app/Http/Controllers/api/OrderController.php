@@ -11,10 +11,11 @@ namespace App\Http\Controllers\Api;
 use App\Exceptions\OrderProductUnavailableException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\orderRequest as OrderRequest;
+use App\Http\Requests\UpdateOrderStatusRequest;
 use App\Http\Resources\OrderResource;
 use App\Models\Order;
-use App\Notifications\OrderstausUpdated;
 use App\Interfaces\OrderServiceInterface;
+use App\Interfaces\OrderStatusServiceInterface;
 use App\Traits\ApiResponseTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -23,7 +24,10 @@ class OrderController extends Controller
 {
     use ApiResponseTrait;
 
-    public function __construct(private OrderServiceInterface $orderService)
+    public function __construct(
+        private OrderServiceInterface $orderService,
+        private OrderStatusServiceInterface $orderStatusService
+    )
     {
     }
 
@@ -113,77 +117,29 @@ class OrderController extends Controller
 
 
 
-    public function controlStatus(string $id, Request $request)
+    public function controlStatus(string $id, UpdateOrderStatusRequest $request)
     {
+        try {
+            $order = $this->orderStatusService->changeStatus($id, $request->validated()['status']);
 
-        $orderStatus = Order::find($id);
-        if (!$orderStatus) {
-
+            return $this->successResponse(
+                new OrderResource($order),
+                'Order status updated successfully.',
+                200
+            );
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return $this->errorResponse(null, 'order not found to change status', 404);
+        } catch (\DomainException $e) {
+            return $this->errorResponse(null, $e->getMessage(), 400);
+        } catch (\Exception $e) {
+            $status = $e->getCode();
+            if (!is_int($status) || $status < 400) {
+                $status = 500;
+            }
+
+            return $this->errorResponse(null, $e->getMessage(), $status);
         }
-        // logger($orderStatus);
-        $nameProductInOrder = $orderStatus->products->pluck('pivot.product_name')->join(' ,');
-        // logger($nameProductInOrder);
-
-        $currentStatus = $orderStatus->status;
-        $newStatus = $request->status;
-        $allowedStatuses = ['pending', 'processing', 'completed', 'cancelled'];
-
-        if (!in_array($newStatus, $allowedStatuses)) {
-            return response()->json([
-                'message' => 'invalid status value',
-                'allowed statuses' => $allowedStatuses,
-                'status' => 400
-            ], 400);
-        }
-
-
-
-        // allowed transitions ===
-        $validTransition = [
-            'pending' => ['processing', 'cancelled'],
-            'processing' => ['completed', 'cancelled'],
-            'completed' => [],
-            'cancelled' => []
-        ];
-
-
-
-        //====
-        if (!in_array($newStatus, $validTransition[$currentStatus])) {
-            return response()->json([
-                'message' => "invalid status transition from {$currentStatus} to {$newStatus}",
-                'allowed transions' => $validTransition,
-                'status' => 400
-            ], 400);
-        }
-
-
-
-
-
-
-        $orderStatus->update([
-            'status' => $request->status
-        ]);
-
-
-
-        $user_name = Auth::user()->name;
-        $oderID = $orderStatus->id;
-        $orderStatus->user->notify(new OrderstausUpdated($oderID, $currentStatus, $newStatus, $user_name));
-
-
-        return response()->json([
-            'message' => 'this status for order',
-            'aboutOrder' => "the order for  {$nameProductInOrder} has status {$currentStatus}",
-            'newStatus' => "the order updated it status successfully to {$newStatus}",
-            'Notification sent to user' => true,
-            'success' => true,
-            'status' => 200
-        ], 200);
     }
-
 
 
     public function show(string $id)
@@ -204,7 +160,7 @@ class OrderController extends Controller
 
     public function update(Request $request, Order $order)
     {
-       
+
     }
 
 

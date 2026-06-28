@@ -41,6 +41,11 @@ class OrderRepository implements OrderRepositoryInterface
             ->paginate($perPage);
     }
 
+    public function findById(int|string $id): ?Order
+    {
+        return $this->model->find($id);
+    }
+
     public function create(array $data): Order
     {
         return $this->model->create($data);

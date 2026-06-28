@@ -11,5 +11,7 @@ interface OrderRepositoryInterface
 
     public function getByUser(int $userId, int $perPage = 10): LengthAwarePaginator;
 
+    public function findById(int|string $id): ?Order;
+
     public function create(array $data): Order;
 }
