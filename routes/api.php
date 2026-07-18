@@ -64,7 +64,7 @@ Route::middleware('auth:sanctum', 'role.admin' )->group(function () {
 Route::prefix('/order')->group(function () {
     // User privileges on order
     Route::middleware('auth:sanctum', 'role.user')->group(function () {
-        Route::post('/', [OrderController::class, 'store']); //User create order
+        Route::post('/', [OrderController::class, 'store']); //User create order  //**
         Route::get('/myorders' , [OrderController::class , 'myorders']); // User show his orders  //**
         Route::get('/notifications' , [NotificationController::class , 'index']); //User show his notification
 

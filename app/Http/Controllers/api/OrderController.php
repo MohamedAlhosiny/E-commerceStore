@@ -33,9 +33,15 @@ class OrderController extends Controller
 
     public function index(Request $request)
     {
+
         $perPage = $request->integer('per_page', 10);
         $orders = $this->orderService->getAll($perPage);
 
+        $checkOrders = $orders->isNotEmpty() ? true : false ; 
+
+        if (!$checkOrders) {
+            return $this->errorResponse(null, 'No orders found.', 404);
+        }
         return $this->successResponse(
             OrderResource::collection($orders),
             'All orders retrieved successfully.',
