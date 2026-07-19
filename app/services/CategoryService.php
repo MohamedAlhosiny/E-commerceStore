@@ -13,7 +13,8 @@ class CategoryService
 
    public function getAll(): LengthAwarePaginator
     {
-        return $this->categoryRepository->getAll();
+
+       return  $this->categoryRepository->getAll();
     }
 
     public function findById(int $id) :  Category

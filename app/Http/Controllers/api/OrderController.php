@@ -36,8 +36,8 @@ class OrderController extends Controller
 
         $perPage = $request->integer('per_page', 10);
         $orders = $this->orderService->getAll($perPage);
+        $checkOrders = $orders->isNotEmpty() ? true : false ;
 
-        $checkOrders = $orders->isNotEmpty() ? true : false ; 
 
         if (!$checkOrders) {
             return $this->errorResponse(null, 'No orders found.', 404);
@@ -89,7 +89,8 @@ class OrderController extends Controller
 
 
         try {
-            $order = $this->orderService->createOrder(Auth::id(), $request->validated()['products']);
+            $orderRequest = $request->validated();
+            $order = $this->orderService->createOrder(Auth::id(), $orderRequest["products"]);
 
             return $this->createdResponse(
                 new OrderResource($order),

@@ -27,8 +27,17 @@ class orderRequest extends FormRequest
 
             // كل أوردر لازم يكون ليه منتجات
             'products' => 'required|array|min:1',
-            'products.*.product_id' => 'required|integer|min:1',
+            'products.*.product_id' => 'required|integer|min:1|exists:products,id',
             'products.*.quantity' => 'required|integer|min:1',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'products.required' => 'The order must contain at least one product.',
+            'products.*.product_id.exists' => 'The selected product does not exist.',
+            'products.*.quantity.min' => 'The quantity must be at least 1.',
         ];
     }
 }

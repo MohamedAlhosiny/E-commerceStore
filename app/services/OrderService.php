@@ -23,7 +23,10 @@ class OrderService implements OrderServiceInterface
 
     public function getAll(int $perPage = 10): LengthAwarePaginator
     {
-        return $this->orderRepository->getAll($perPage);
+
+       return  $this->orderRepository->getAll($perPage);
+
+
     }
 
 
