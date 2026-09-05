@@ -16,16 +16,16 @@ A simple and clean Order Management System built with Laravel, designed to handl
 This project provides a backend API for managing product orders.
 It allows users to browse and order products, while admins and superadmins can manage the platform’s data and users.
 
-📦 Main Models & Relationships
+== Main Models & Relationships
 
-🏷️ Category
+= Category
 
 Each category (e.g., Cosmetics) contains multiple products.
 
 Relationship:
 Category hasMany Products
 
-🧴 Product
+= Product
 
 Belongs to one category.
 
@@ -37,7 +37,7 @@ Product belongsTo Category
 
 Product belongsToMany Orders (via pivot table with quantity & price)
 
-📦 Order
+= Order
 
 Represents a purchase made by a specific user.
 
@@ -49,15 +49,15 @@ Order belongsTo User
 
 Order belongsToMany Products
 
-👤 User
+= User
 
 Represents a client who can place multiple orders.
 
 Relationship:
 User hasMany Orders
 
-🛠️ Roles & Permissions
-👨‍💼 Admin
+= Roles & Permissions
+= Admin
 
 Can create, update, and delete categories and products.
 
@@ -65,7 +65,7 @@ Can view and manage all users’ orders.
 
 Can update order statuses, triggering notifications to users.
 
-🦸 Superadmin
+= Superadmin
 
 Has all admin privileges, plus:
 
@@ -75,13 +75,13 @@ Can add new admins.
 
 Has full control over the system.
 ==========================================
-👥 User
+= User
 
 Can browse products and place orders.
 
 Can view their own orders and receive updates when status changes.
 
-🔔 Notifications
+= Notifications
 
 Users receive email + database notifications when:
 

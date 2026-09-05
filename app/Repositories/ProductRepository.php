@@ -68,4 +68,15 @@ class ProductRepository implements ProductRepositoryInterface
             ->select('id', 'name', 'description', 'price', 'status', 'category_id')
             ->get();
     }
+
+    public function findByIds(array $ids): Collection
+    {
+        return $this->model
+            ->whereIn('id', $ids)
+            ->with(['category' => function ($query) {
+                $query->select('id', 'name');
+            }])
+            ->select('id', 'name', 'description', 'price', 'status', 'category_id')
+            ->get();
+    }
 }

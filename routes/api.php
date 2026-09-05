@@ -78,7 +78,7 @@ Route::prefix('/order')->group(function () {
                 'statuses for order' => ['pending' , 'processing','completed' , 'cancelled']
             ]); //**
         });
-        Route::patch('/{id}/statusOrder' , [OrderController::class , 'controlStatus']); 
+        Route::patch('/{id}/statusOrder' , [OrderController::class , 'controlStatus']); //**
         Route::get('/{id}' , [OrderController::class , 'show']);
         Route::delete('/{id}' , [OrderController::class , 'destroy']);
 

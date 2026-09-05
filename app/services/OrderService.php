@@ -46,8 +46,16 @@ class OrderService implements OrderServiceInterface
             $errors = [];
             $totalPrice = 0;
 
+            $products = array_column($products , "product_id");
+
+            // dd($products);
+            $productModels = $this->productRepository->findByIds($products);
+
+            // dd($productModels);
+            // dd($productModels -> pluck("name" ));
+
             foreach ($products as $productData) {
-                $product = $this->productRepository->findById($productData['product_id']);
+                $product = $this->productRepository->findById($productData['product_id']); // N+1 Query problem
 
                 if (!$product || $product->status === 'unactive') {
                     $errors[] = [

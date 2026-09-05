@@ -53,6 +53,7 @@ class ProductController2 extends Controller
                 'description' => $product->description,
                 'category_id' => $product->category_id,
                 'category_name' => optional($product->category)->name,
+                'stock' => $product->stock,
             ];
 
             return $this->createdResponse($responseData, 'Product stored successfully.');

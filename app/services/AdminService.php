@@ -21,7 +21,7 @@ class AdminService implements AdminServiceInterface
         $data['password'] = Hash::make($data['password']);
         $data['role'] = $data['role'] ?? 'admin';
 
-        return $this->adminRepository->store($data);
+        return $this->adminRepository->store($data); // composition over inheritance
     }
 
     public function login(string $email, string $password)

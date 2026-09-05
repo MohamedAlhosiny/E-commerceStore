@@ -23,4 +23,5 @@ interface ProductRepositoryInterface
     public function listActiveProducts(): Collection;
 
     public function searchActiveByName(string $name): Collection;
+    public function findByIds(array $ids): Collection;
 }
